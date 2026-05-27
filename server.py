@@ -38,14 +38,27 @@ except Exception as e:
 
 app = FastAPI(title="Apna AI Gym Coach API")
 
-# Enable CORS for frontend connection
-# Configure CORS origins via ALLOW_ORIGINS env (comma-separated) or default to wildcard
-allow_origins_env = os.environ.get("ALLOW_ORIGINS", "*")
+# Enable CORS for frontend connection.
+# Default to the deployed Vercel frontend plus local dev origins.
+default_allow_origins = {
+    "https://ai-gym-coach-frontend-six.vercel.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+}
+
+allow_origins_env = os.environ.get("ALLOW_ORIGINS", "")
+allow_origins = set(default_allow_origins)
+
 if allow_origins_env.strip() == "*":
-    allow_origins = ["*"]
-else:
-    # split comma-separated origins
-    allow_origins = [o.strip() for o in allow_origins_env.split(",") if o.strip()]
+    allow_origins = {"*"}
+elif allow_origins_env.strip():
+    allow_origins.update(
+        origin.strip()
+        for origin in allow_origins_env.split(",")
+        if origin.strip()
+    )
+
+allow_origins = sorted(allow_origins)
 
 app.add_middleware(
     CORSMiddleware,
