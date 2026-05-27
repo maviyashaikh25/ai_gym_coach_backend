@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ai-gym-coach-backend
+    env: docker
+    rootDir: .
+    plan: starter
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ALLOW_ORIGINS
+        sync: false
